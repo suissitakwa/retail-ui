@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProducts } from '../api';
+import { fetchProducts, addToCart } from '../api';
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState({}); // Track add-to-cart state
 
   useEffect(() => {
     fetchProducts()
@@ -16,6 +17,19 @@ export default function Shop() {
         setLoading(false);
       });
   }, []);
+
+  const handleAddToCart = async (productId) => {
+    setAdding(prev => ({ ...prev, [productId]: true }));
+    try {
+      await addToCart(productId, 1);
+      alert('Product added to cart!');
+    } catch (err) {
+      console.error('Add to cart failed:', err);
+      alert('Failed to add to cart.');
+    } finally {
+      setAdding(prev => ({ ...prev, [productId]: false }));
+    }
+  };
 
   if (loading) return <div className="text-center my-5">Loading...</div>;
 
@@ -34,7 +48,13 @@ export default function Shop() {
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{p.name}</h5>
                 <p className="card-text">${p.price.toFixed(2)}</p>
-                <button className="btn btn-outline-primary mt-auto">Add to Cart</button>
+                <button
+                  className="btn btn-outline-primary mt-auto"
+                  onClick={() => handleAddToCart(p.id)}
+                  disabled={adding[p.id]}
+                >
+                  {adding[p.id] ? 'Adding...' : 'Add to Cart'}
+                </button>
               </div>
             </div>
           </div>

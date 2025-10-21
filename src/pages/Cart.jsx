@@ -5,7 +5,8 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    fetchCart()
+      const customerId = 1;
+    fetchCart(customerId)
       .then(res => setCartItems(res.data.items || []))
       .catch(err => console.error('Failed to fetch cart', err));
   }, []);

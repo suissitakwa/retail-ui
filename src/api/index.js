@@ -8,4 +8,10 @@ const API = axios.create({
 
 export const fetchProducts = () => API.get('/api/v1/products');
 export const fetchProfile = () => API.get('/api/v1/customers/me');
-export const fetchCart = () => API.get('/api/v1/cart');
+export const fetchCart = (customerId) => API.get(`/api/v1/cart/${customerId}`);
+export const addToCart = (productId, quantity = 1) => {
+  return API.post('/api/v1/cart/${customerId}/add', {
+    productId,
+    quantity
+  });
+};
