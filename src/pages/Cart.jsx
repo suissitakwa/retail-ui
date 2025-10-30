@@ -5,8 +5,7 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-      const customerId = 1;
-    fetchCart(customerId)
+    fetchCart() // Now automatically includes token
       .then(res => setCartItems(res.data.items || []))
       .catch(err => console.error('Failed to fetch cart', err));
   }, []);
