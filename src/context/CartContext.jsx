@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { login as apiLogin, fetchProfile } from '../api';
+import React, { createContext, useState, useContext } from 'react';
+
 
 const CartContext = createContext();
 
@@ -8,7 +8,7 @@ const useCart = () => useContext(CartContext);
 const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
 
-  // This function is called by the Shop component to update the UI
+
   const incrementCartCount = () => {
     setCartCount(prev => prev + 1);
   };
@@ -19,3 +19,4 @@ const CartProvider = ({ children }) => {
     </CartContext.Provider>
   );
 };
+export { CartProvider, useCart };

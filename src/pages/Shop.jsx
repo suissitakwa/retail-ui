@@ -1,15 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { fetchProducts, addToCart } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+
+
+const NotificationBar = ({ message, type, onClose }) => {
+  if (!message) return null;
+  return (
+    <div
+      className={`p-3 mb-4 rounded-md text-white ${
+        type === 'error' ? 'bg-red-600' : 'bg-green-600'
+      }`}
+    >
+      <div className="flex justify-between items-center">
+        <span>{message}</span>
+        <button className="font-bold ml-4" onClick={onClose}>
+          ✖
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function Shop() {
   const { user } = useAuth();
-   const { refreshCartCount } = useCart();
+  const { incrementCartCount } = useCart(); // ✅ from CartContext
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState({});
   const [notification, setNotification] = useState({ message: '', type: '' });
- useEffect(() => {
+
+  useEffect(() => {
     fetchProducts()
       .then(res => {
         setProducts(res.data);
@@ -29,18 +51,15 @@ export default function Shop() {
     }
 
     setAdding(prev => ({ ...prev, [productId]: true }));
-    setNotification({ message: '', type: '' }); // Clear any previous notification
+    setNotification({ message: '', type: '' });
 
     try {
       await addToCart(productId, 1);
-
-
-      refreshCartCount();
-
+      incrementCartCount();
       setNotification({ message: 'Product added to cart!', type: 'success' });
     } catch (err) {
       console.error('Add to cart failed:', err);
-      setNotification({ message: 'Failed to add to cart. Check console for details.', type: 'error' });
+      setNotification({ message: 'Failed to add to cart.', type: 'error' });
     } finally {
       setAdding(prev => ({ ...prev, [productId]: false }));
     }
@@ -48,7 +67,8 @@ export default function Shop() {
 
   const closeNotification = () => setNotification({ message: '', type: '' });
 
-  if (loading) return <div className="text-center my-5 p-5 text-xl font-medium">Loading products...</div>;
+  if (loading)
+    return <div className="text-center my-5 p-5 text-xl font-medium">Loading products...</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -62,19 +82,28 @@ export default function Shop() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {products.map(p => (
-          <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300" key={p.id}>
+          <div
+            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+            key={p.id}
+          >
             <img
               src={p.imageUrl || 'https://placehold.co/150x150/EEEEEE/333333?text=Product'}
               className="w-full h-48 object-cover rounded-t-xl"
               alt={p.name}
-              onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/150x150/EEEEEE/333333?text=Product' }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://placehold.co/150x150/EEEEEE/333333?text=Product';
+              }}
             />
             <div className="p-5 flex flex-col h-full">
               <h5 className="text-xl font-semibold mb-2 text-gray-900">{p.name}</h5>
               <p className="text-2xl font-bold text-indigo-600 mb-4">${p.price.toFixed(2)}</p>
               <button
-                className={`w-full py-2 px-4 rounded-lg font-medium transition-colors mt-auto
-                  ${adding[p.id] || !user ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+                className={`w-full py-2 px-4 rounded-lg font-medium transition-colors mt-auto ${
+                  adding[p.id] || !user
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                }`}
                 onClick={() => handleAddToCart(p.id)}
                 disabled={adding[p.id] || !user}
               >
