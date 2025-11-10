@@ -1,38 +1,58 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+// Assuming your api.js is in '../api.js'
 import { login as apiLogin, fetchProfile } from '../api';
 
-const AuthContext = createContext({ user: null, login: async ()=>{}, logout: ()=>{} });
+const AuthContext = createContext({ user: null, login: async ()=>{}, logout: ()=>{}, setAuthData: ()=>{} });
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  // New function to handle setting both token and user state
+  const setAuthData = (token, profileData) => {
+    if (token) {
+      localStorage.setItem('accessToken', token);
+    } else {
+      localStorage.removeItem('accessToken');
+    }
+    setUser(profileData);
+  };
+
+  // 1. Check for token on component mount (page refresh)
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
+      // In a real app, you might decode the token or validate it before fetching profile
       fetchProfile()
         .then(res => setUser(res.data))
         .catch(() => {
+          // If token is invalid, log out the user
           localStorage.removeItem('accessToken');
           setUser(null);
         });
     }
   }, []);
 
+  // 2. Original Login: Fetches token, then fetches profile, then calls setAuthData
   const login = async (email, password) => {
-     const res = await apiLogin(email, password);
-    localStorage.setItem('accessToken', res.data.token);
+    const res = await apiLogin(email, password);
+    // Assuming the API response gives back the token: res.data.token
+
+    // Now fetch the profile using the new token
     const profileRes = await fetchProfile();
-    setUser(profileRes.data);
+
+    // Set token and user state in one go
+    setAuthData(res.data.token, profileRes.data);
+
     return profileRes.data;
   };
 
+  // 3. Logout: Clears token and user state
   const logout = () => {
-    localStorage.removeItem('accessToken');
-    setUser(null);
+    setAuthData(null, null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, setAuthData }}>
       {children}
     </AuthContext.Provider>
   );

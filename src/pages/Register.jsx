@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { register as apiRegister } from '../api';
+import { useAuth } from '../context/AuthContext.jsx';
+import { register as apiRegister, fetchProfile } from '../api';
+
 export default function Register() {
   const [form, setForm] = useState({
     firstname: '',
@@ -12,18 +13,32 @@ export default function Register() {
   });
 
   const [error, setError] = useState('');
+  // 1. Retrieve the new setter function from context
+  const { setAuthData } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiRegister(form);
-      alert('Registration successful!');
-      navigate('/login');
+      const res = await apiRegister(form);
+
+      const token = res.data.token;
+
+      // Step 1: Save the token to local storage
+      localStorage.setItem('accessToken', token);
+
+      // Step 2: Fetch the full user profile using the new token
+      const profileRes = await fetchProfile();
+
+      // Step 3: Update the global state immediately using the refactored context function
+      // This is the fix: it tells the application the user is now authenticated.
+      setAuthData(token, profileRes.data);
+
+      navigate('/');
     } catch (err) {
       console.error('Registration failed', err);
       setError('Registration failed – try again.');
