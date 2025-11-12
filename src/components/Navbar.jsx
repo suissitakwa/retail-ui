@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Navbar() {
   const { cartCount } = useCart();
+  const { totalItems } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 

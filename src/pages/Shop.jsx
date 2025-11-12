@@ -24,7 +24,7 @@ const NotificationBar = ({ message, type, onClose }) => {
 
 export default function Shop() {
   const { user } = useAuth();
-  const { incrementCartCount } = useCart(); // ✅ from CartContext
+  const { addToCart,incrementCartCount } = useCart(); // ✅ from CartContext
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,7 @@ export default function Shop() {
 
     try {
       await addToCart(productId, 1);
-      incrementCartCount();
+      //incrementCartCount();
       setNotification({ message: 'Product added to cart!', type: 'success' });
     } catch (err) {
       console.error('Add to cart failed:', err);

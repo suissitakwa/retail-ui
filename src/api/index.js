@@ -22,6 +22,11 @@
     export const fetchProducts = () => API.get('/api/v1/products');
     export const fetchProfile = () => API.get('/api/v1/customers/me');
     export const fetchCart = () => API.get('/api/v1/cart');
+    export const removeFromCart = (productId) =>
+      API.delete(`/api/v1/cart/remove/${productId}`);
 
     export const addToCart = (productId, quantity) =>
       API.post('/api/v1/cart/add', { productId, quantity });
+    export const clearCart = () => {
+        return API.delete('/api/v1/cart/clear');
+      };

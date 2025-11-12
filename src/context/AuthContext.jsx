@@ -32,19 +32,23 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // 2. Original Login: Fetches token, then fetches profile, then calls setAuthData
   const login = async (email, password) => {
+    // Step 1: get token
     const res = await apiLogin(email, password);
-    // Assuming the API response gives back the token: res.data.token
+    const token = res.data.token;
 
-    // Now fetch the profile using the new token
+    // Step 2: store token immediately
+    localStorage.setItem('accessToken', token);
+
+    // Step 3: now fetch profile (the Axios interceptor will attach the token)
     const profileRes = await fetchProfile();
 
-    // Set token and user state in one go
-    setAuthData(res.data.token, profileRes.data);
+    // Step 4: update React state
+    setAuthData(token, profileRes.data);
 
     return profileRes.data;
   };
+
 
   // 3. Logout: Clears token and user state
   const logout = () => {
