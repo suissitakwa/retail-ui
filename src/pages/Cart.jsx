@@ -1,5 +1,9 @@
 import React from 'react';
 import { useCart } from '../context/CartContext.jsx';
+import { createCheckoutSession } from "../api";
+import { loadStripe } from "@stripe/stripe-js";
+import CheckoutButton from '../components/CheckoutButton';
+
 
 export default function Cart() {
 
@@ -104,9 +108,9 @@ export default function Cart() {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <button className="px-8 py-3 bg-indigo-600 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-indigo-700 transition duration-200 transform hover:scale-[1.02] w-full md:w-auto">
-              Proceed to Checkout
-            </button>
+
+              <CheckoutButton />
+
           </div>
         </div>
       )}

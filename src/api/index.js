@@ -15,7 +15,8 @@
         password,
       });
     };
-
+export const createCheckoutSession = () =>
+  API.post('/api/v1/checkout/create-session');
     export const register = async (data) => {
       return API.post('/auth/register', data);
     };
