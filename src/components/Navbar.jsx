@@ -46,15 +46,24 @@ export default function Navbar() {
             {/* Conditional Navigation based on Auth State */}
             {user ? (
               <>
+              <NavLink className="nav-link" to="/orders">
+                My Orders
+              </NavLink>
+
                 <NavLink className="nav-link" to="/profile">
                   Profile
                 </NavLink>
-                <button
-                  className="btn btn-sm btn-outline-secondary ms-3"
-                  onClick={handleLogout}
-                >
-                  Logout ({user.name || user.email})
-                </button>
+               <button
+                 className="btn btn-sm"
+                 style={{
+                   borderColor: "var(--color-primary)",
+                   color: "var(--color-primary)",
+                 }}
+                 onClick={handleLogout}
+               >
+                 Logout ({user.name || user.email})
+               </button>
+
               </>
             ) : (
               <NavLink className="btn btn-sm btn-primary text-white ms-3" to="/login">

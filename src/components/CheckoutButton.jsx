@@ -33,7 +33,7 @@ export default function CheckoutButton() {
 
   return (
     <button
-      className="px-8 py-3 bg-indigo-600 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-indigo-700 transition duration-200 w-full md:w-auto"
+      className="btn-amazon-checkout"
       onClick={handleCheckout}
       disabled={loading}
     >

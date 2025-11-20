@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
@@ -11,6 +12,7 @@ import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
+import Orders from './pages/Orders';
 import Register from './pages/Register';
 import ProtectedRoute from './pages/ProtectedRoute';
 
@@ -49,6 +51,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                }
+              />
+
             </Routes>
           </main>
           <Footer />

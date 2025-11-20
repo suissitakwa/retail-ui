@@ -1,4 +1,6 @@
     import axios from 'axios';
+
+
     const API = axios.create({
       baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080',
     });
@@ -20,6 +22,11 @@ export const createCheckoutSession = () =>
     export const register = async (data) => {
       return API.post('/auth/register', data);
     };
+    export const fetchMyOrders = (page = 0, size = 10) => {
+      return API.get(`/api/v1/orders/my-orders?page=${page}&size=${size}`);
+    };
+
+
     export const fetchProducts = () => API.get('/api/v1/products');
     export const fetchProfile = () => API.get('/api/v1/customers/me');
     export const fetchCart = () => API.get('/api/v1/cart');

@@ -1,3 +1,593 @@
-body {
-  background-color: #f8f9fa;
+/* -------------------------------------------------------
+   GLOBAL THEME VARIABLES
+------------------------------------------------------- */
+:root {
+  --color-primary: #3b82f6;      /* Blue 500 */
+  --color-primary-dark: #1d4ed8; /* Blue 700 */
+  --color-secondary: #1e293b;    /* Slate 800 */
+  --color-bg: #f8fafc;           /* Slate 50 */
+  --color-card: #ffffff;
+  --color-text: #0f172a;         /* Slate 900 */
+  --color-muted: #64748b;        /* Slate 500 */
+  --color-border: #e2e8f0;       /* Slate 200 */
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 3px 10px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+
+  --transition: all 0.25s ease;
 }
+
+/* -------------------------------------------------------
+   BASE STYLE
+------------------------------------------------------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Smooth animations */
+* {
+  transition: var(--transition);
+}
+
+/* -------------------------------------------------------
+   NAVBAR
+------------------------------------------------------- */
+.navbar, .bg-light {
+  background-color: var(--color-card) !important;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-link {
+  color: var(--color-text) !important;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.nav-link:hover {
+  color: var(--color-primary) !important;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--color-primary) !important;
+}
+
+/* -------------------------------------------------------
+   BUTTONS
+------------------------------------------------------- */
+.btn {
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-dark) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.btn-outline-secondary:hover {
+  background: var(--color-primary);
+  color: white !important;
+}
+
+/* -------------------------------------------------------
+   PAGE TITLES
+------------------------------------------------------- */
+h1, h2, h3 {
+  color: var(--color-secondary);
+}
+
+/* -------------------------------------------------------
+   CARDS (Shop items, Order Cards, Product cards)
+------------------------------------------------------- */
+.card,
+.bg-white {
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* -------------------------------------------------------
+   PRODUCT IMAGE PLACEHOLDERS
+------------------------------------------------------- */
+.product-img,
+img {
+  border-radius: var(--radius-sm);
+}
+
+/* -------------------------------------------------------
+   SHOP PAGE PRODUCT CARD
+------------------------------------------------------- */
+.product-card {
+  background: var(--color-card);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.product-price {
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* -------------------------------------------------------
+   ORDER LIST PAGE
+------------------------------------------------------- */
+.order-card {
+  padding: 20px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.order-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-status-tag {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.status-pending {
+  background: #fbbf24; /* Amber 400 */
+}
+
+.status-completed {
+  background: #22c55e;
+}
+
+.status-cancelled {
+  background: #ef4444;
+}
+
+
+.cart-item {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.cart-summary {
+  background: var(--color-card);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.cart-total {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-secondary);
+}
+
+
+input, select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  width: 100%;
+}
+
+input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.form-container {
+  background: var(--color-card);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+
+footer {
+  background: var(--color-card);
+  padding: 20px;
+  margin-top: 50px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+
+.text-muted {
+  color: var(--color-muted);
+}
+
+.border-muted {
+  border-color: var(--color-border);
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 9999;
+}
+
+.drawer-panel {
+  width: 380px;
+  background: var(--color-card);
+  height: 100vh;
+  padding: 20px;
+  box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-close-btn {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.drawer-section {
+  margin-top: 20px;
+}
+
+.drawer-item {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.drawer-item-img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.drawer-footer {
+  margin-top: 30px;
+}
+/* --------------------------------------------
+   AMAZON-STYLE PRODUCT GRID
+--------------------------------------------- */
+.product-card-amazon {
+  background: var(--color-card);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.product-card-amazon:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.product-card-img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.product-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  min-height: 48px;
+}
+
+.product-card-price {
+  color: var(--color-primary);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 10px;
+}
+/* --------------------------------------------
+   AUTH PAGES (Login / Register)
+--------------------------------------------- */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.auth-card {
+  background: var(--color-card);
+  padding: 40px;
+  width: 380px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: var(--color-secondary);
+}
+
+.auth-subtext {
+  text-align: center;
+  color: var(--color-muted);
+  margin-bottom: 25px;
+}
+
+.auth-card label {
+  font-weight: 600;
+  margin-top: 15px;
+  display: block;
+}
+
+.auth-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.cart-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: var(--color-card);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.cart-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.cart-empty-box {
+  padding: 40px;
+  border: 2px dashed var(--color-border);
+  background: #f1f5f9;
+  text-align: center;
+  border-radius: var(--radius-md);
+}
+
+.empty-title {
+  font-size: 20px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.empty-subtext {
+  color: var(--color-muted);
+  margin-top: 5px;
+}
+
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.cart-item:hover {
+  background: #f8fafc;
+  box-shadow: var(--shadow-md);
+}
+
+.cart-item-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.cart-item-subtext {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.cart-item-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.cart-item-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+
+.remove-btn {
+  background: transparent;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  background: #fee2e2;
+}
+
+
+.cart-summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #eef2ff;
+  border-radius: var(--radius-md);
+  margin-top: 25px;
+  font-size: 20px;
+  border: 1px solid var(--color-border);
+}
+
+.summary-label {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.summary-total {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+/* Checkout area */
+.checkout-row {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  gap: 10px;
+}
+
+.spinner {
+  border: 3px solid #ddd;
+  border-top-color: var(--color-primary);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.error-card {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 15px;
+  border-radius: var(--radius-md);
+  border: 1px solid #fecaca;
+  box-shadow: var(--shadow-sm);
+}
+/* -------------------------------------------------------
+   AMAZON CHECKOUT BUTTON (Gold Style)
+------------------------------------------------------- */
+.btn-amazon-checkout {
+  background: linear-gradient(#f7dfa5, #f0c14b);
+  border: 1px solid #a88734;
+  color: #111;
+  padding: 14px 28px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  width: 100%;
+  max-width: 260px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: var(--transition);
+}
+
+/* Hover */
+.btn-amazon-checkout:hover {
+  background: linear-gradient(#f5d78e, #eeba37);
+  border-color: #9c7e31;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+
+/* Active */
+.btn-amazon-checkout:active {
+  background: linear-gradient(#f0c14b, #e0ac2f);
+  transform: scale(0.98);
+}
+
+/* Disabled */
+.btn-amazon-checkout:disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+

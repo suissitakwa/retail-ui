@@ -10,10 +10,11 @@ export default function Register() {
     email: '',
     password: '',
     role: 'ROLE_CUSTOMER',
+
+
   });
 
   const [error, setError] = useState('');
-  // 1. Retrieve the new setter function from context
   const { setAuthData } = useAuth();
   const navigate = useNavigate();
 
@@ -25,17 +26,11 @@ export default function Register() {
     e.preventDefault();
     try {
       const res = await apiRegister(form);
-
       const token = res.data.token;
 
-      // Step 1: Save the token to local storage
       localStorage.setItem('accessToken', token);
 
-      // Step 2: Fetch the full user profile using the new token
       const profileRes = await fetchProfile();
-
-      // Step 3: Update the global state immediately using the refactored context function
-      // This is the fix: it tells the application the user is now authenticated.
       setAuthData(token, profileRes.data);
 
       navigate('/');
@@ -46,60 +41,113 @@ export default function Register() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Create an Account</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Create your Account</h2>
+        <p className="auth-subtext">Join our shop and start ordering today</p>
+
+        {error && <div className="auth-error">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
+          {/* Name Section */}
           <label>First Name</label>
           <input
             type="text"
             name="firstname"
-            className="form-control"
             value={form.firstname}
             onChange={handleChange}
             required
           />
-        </div>
-        <div className="mb-3">
+
           <label>Last Name</label>
           <input
             type="text"
             name="lastname"
-            className="form-control"
             value={form.lastname}
             onChange={handleChange}
             required
           />
-        </div>
-        <div className="mb-3">
+
+          {/* Contact */}
           <label>Email</label>
           <input
             type="email"
             name="email"
-            className="form-control"
             value={form.email}
             onChange={handleChange}
             required
           />
-        </div>
-        <div className="mb-3">
+
+          {/* Password */}
           <label>Password</label>
           <input
             type="password"
             name="password"
-            className="form-control"
             value={form.password}
             onChange={handleChange}
             required
           />
-        </div>
-        <button type="submit" className="btn btn-success">Register</button>
 
-        <p className="mt-3 text-center">
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
-      </form>
+          {/* ADDRESS SECTION */}
+          <h3 style={{ marginTop: "25px", color: "var(--color-secondary)" }}>
+            Shipping Address
+          </h3>
+
+          <label>Street</label>
+          <input
+            type="text"
+            name="street"
+            value={form.street}
+            onChange={handleChange}
+            required
+          />
+
+          <label>City</label>
+          <input
+            type="text"
+            name="city"
+            value={form.city}
+            onChange={handleChange}
+            required
+          />
+
+          <label>State</label>
+          <input
+            type="text"
+            name="state"
+            value={form.state}
+            onChange={handleChange}
+            required
+          />
+
+          <label>Postal Code</label>
+          <input
+            type="text"
+            name="postalCode"
+            value={form.postalCode}
+            onChange={handleChange}
+            required
+          />
+
+          <label>Country</label>
+          <input
+            type="text"
+            name="country"
+            value={form.country}
+            onChange={handleChange}
+            required
+          />
+
+          {/* Submit Button */}
+          <button type="submit" className="btn-primary w-full mt-4">
+            Create Account
+          </button>
+
+          <p className="auth-subtext mt-3">
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

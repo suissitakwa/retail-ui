@@ -1,60 +1,52 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { login } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { saveAuth } = useAuth();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await login(email, password);
-      if (user.role === 'ROLE_ADMIN') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      const res = await login(form.email, form.password);
+      saveAuth(res.data);
     } catch (err) {
-      console.error('Login failed', err);
-      setError('Login failed – please check credentials');
+      setError("Invalid email or password");
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Login</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Welcome Back</h2>
+        <p className="auth-subtext">Login to continue shopping</p>
+
+        {error && <p className="auth-error">{error}</p>}
+
+        <form onSubmit={handleSubmit}>
           <label>Email</label>
           <input
             type="email"
-            className="form-control"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
+            value={form.email}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, email: e.target.value }))
+            }
           />
-        </div>
-        <div className="mb-3">
+
           <label>Password</label>
           <input
             type="password"
-            className="form-control"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
+            value={form.password}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, password: e.target.value }))
+            }
           />
-        </div>
-        <button type="submit" className="btn btn-primary">Login</button>
-      </form>
 
-      <p className="mt-3 text-center">
-        Don’t have an account? <Link to="/register">Create one</Link>
-      </p>
+          <button className="btn-primary w-full mt-3">Login</button>
+        </form>
+      </div>
     </div>
   );
 }
