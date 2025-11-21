@@ -1,35 +1,47 @@
-import React from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Navbar as BsNavbar, Nav, Container, Badge } from 'react-bootstrap';
-import { useCart } from '../context/CartContext.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
+import React from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { Navbar as BsNavbar, Nav, Container, Badge } from "react-bootstrap";
+import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const { cartCount } = useCart();
-  const { totalItems } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Perform logout action
     logout();
-    // Redirect to login page
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
     <BsNavbar bg="light" expand="lg" className="mb-4 shadow-sm sticky-top">
       <Container>
-        {/* Use React Router Link component for the brand logo */}
-        <BsNavbar.Brand as={Link} to="/">RetailUI</BsNavbar.Brand>
+        <BsNavbar.Brand as={Link} to="/">
+          RetailUI
+        </BsNavbar.Brand>
+
         <BsNavbar.Toggle aria-controls="basic-navbar-nav" />
         <BsNavbar.Collapse id="basic-navbar-nav">
 
           <Nav className="ms-auto d-flex align-items-center">
-            <NavLink className="nav-link" to="/">Home</NavLink>
-            <NavLink className="nav-link" to="/shop">Shop</NavLink>
 
-            {/* Cart Link with Badge */}
+            <NavLink className="nav-link" to="/">
+              Home
+            </NavLink>
+
+            <NavLink className="nav-link" to="/shop">
+              Shop
+            </NavLink>
+
+            {/* ADMIN SECTION */}
+            {user?.role === "ROLE_ADMIN" && (
+              <NavLink className="nav-link text-danger fw-bold" to="/admin">
+                Admin Panel
+              </NavLink>
+            )}
+
+            {/* Cart */}
             <NavLink className="nav-link position-relative me-3" to="/cart">
               Cart
               {cartCount > 0 && (
@@ -38,35 +50,34 @@ export default function Navbar() {
                   pill
                   className="ms-1 position-absolute top-0 start-100 translate-middle"
                 >
-                  {cartCount > 99 ? '99+' : cartCount}
+                  {cartCount > 99 ? "99+" : cartCount}
                 </Badge>
               )}
             </NavLink>
 
-            {/* Conditional Navigation based on Auth State */}
+            {/* Authenticated State */}
             {user ? (
               <>
-              <NavLink className="nav-link" to="/orders">
-                My Orders
-              </NavLink>
+                <NavLink className="nav-link" to="/orders">
+                  My Orders
+                </NavLink>
 
                 <NavLink className="nav-link" to="/profile">
                   Profile
                 </NavLink>
-               <button
-                 className="btn btn-sm"
-                 style={{
-                   borderColor: "var(--color-primary)",
-                   color: "var(--color-primary)",
-                 }}
-                 onClick={handleLogout}
-               >
-                 Logout ({user.name || user.email})
-               </button>
 
+                <button
+                  className="btn btn-sm btn-outline-secondary ms-3"
+                  onClick={handleLogout}
+                >
+                  Logout ({user.firstname})
+                </button>
               </>
             ) : (
-              <NavLink className="btn btn-sm btn-primary text-white ms-3" to="/login">
+              <NavLink
+                className="btn btn-sm btn-primary text-white ms-3"
+                to="/login"
+              >
                 Login
               </NavLink>
             )}
