@@ -9,9 +9,11 @@ export default function Register() {
     lastname: '',
     email: '',
     password: '',
-    role: 'ROLE_CUSTOMER',
-
-
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
   });
 
   const [error, setError] = useState('');
@@ -24,8 +26,21 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Build a full address string
+    const fullAddress = `${form.street}, ${form.city}, ${form.state} ${form.postalCode}, ${form.country}`;
+
+    const payload = {
+      firstname: form.firstname,
+      lastname: form.lastname,
+      email: form.email,
+      password: form.password,
+      role: "ROLE_CUSTOMER",
+      address: fullAddress
+    };
+
     try {
-      const res = await apiRegister(form);
+      const res = await apiRegister(payload);
       const token = res.data.token;
 
       localStorage.setItem('accessToken', token);
@@ -49,7 +64,7 @@ export default function Register() {
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          {/* Name Section */}
+
           <label>First Name</label>
           <input
             type="text"
@@ -68,7 +83,6 @@ export default function Register() {
             required
           />
 
-          {/* Contact */}
           <label>Email</label>
           <input
             type="email"
@@ -78,7 +92,6 @@ export default function Register() {
             required
           />
 
-          {/* Password */}
           <label>Password</label>
           <input
             type="password"
@@ -88,7 +101,7 @@ export default function Register() {
             required
           />
 
-          {/* ADDRESS SECTION */}
+          {/* Address Section */}
           <h3 style={{ marginTop: "25px", color: "var(--color-secondary)" }}>
             Shipping Address
           </h3>
@@ -138,7 +151,6 @@ export default function Register() {
             required
           />
 
-          {/* Submit Button */}
           <button type="submit" className="btn-primary w-full mt-4">
             Create Account
           </button>

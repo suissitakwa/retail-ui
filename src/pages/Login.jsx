@@ -1,18 +1,23 @@
 import React, { useState } from "react";
-import { login } from "../api";
+import {  Link,useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const { saveAuth } = useAuth();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      const res = await login(form.email, form.password);
-      saveAuth(res.data);
+      await login(form.email, form.password);
+      navigate("/");
     } catch (err) {
+      console.error(err);
       setError("Invalid email or password");
     }
   };
@@ -31,8 +36,9 @@ export default function Login() {
             type="email"
             value={form.email}
             onChange={(e) =>
-              setForm((prev) => ({ ...prev, email: e.target.value }))
+              setForm((p) => ({ ...p, email: e.target.value }))
             }
+            required
           />
 
           <label>Password</label>
@@ -40,11 +46,17 @@ export default function Login() {
             type="password"
             value={form.password}
             onChange={(e) =>
-              setForm((prev) => ({ ...prev, password: e.target.value }))
+              setForm((p) => ({ ...p, password: e.target.value }))
             }
+            required
           />
 
-          <button className="btn-primary w-full mt-3">Login</button>
+          <button type="submit" className="btn-primary w-full mt-3">
+            Login
+          </button>
+          <p className="auth-subtext mt-3">
+            Don’t have an account? <Link to="/register">Create one</Link>
+          </p>
         </form>
       </div>
     </div>

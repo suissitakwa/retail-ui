@@ -1,56 +1,59 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-// Assuming your api.js is in '../api.js'
 import { login as apiLogin, fetchProfile } from '../api';
 
-const AuthContext = createContext({ user: null, login: async ()=>{}, logout: ()=>{}, setAuthData: ()=>{} });
+const AuthContext = createContext({
+  user: null,
+  login: async () => {},
+  logout: () => {},
+  setAuthData: () => {}
+});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // New function to handle setting both token and user state
+
   const setAuthData = (token, profileData) => {
     if (token) {
-      localStorage.setItem('accessToken', token);
+      localStorage.setItem("accessToken", token);
     } else {
-      localStorage.removeItem('accessToken');
+      localStorage.removeItem("accessToken");
     }
-    setUser(profileData);
+
+    setUser(profileData ? { ...profileData } : null);
   };
 
-  // 1. Check for token on component mount (page refresh)
+
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      // In a real app, you might decode the token or validate it before fetching profile
-      fetchProfile()
-        .then(res => setUser(res.data))
-        .catch(() => {
-          // If token is invalid, log out the user
-          localStorage.removeItem('accessToken');
-          setUser(null);
-        });
-    }
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    fetchProfile()
+      .then(res => {
+        // 🔥 Force React to re-render with new profile object
+        setUser({ ...res.data });
+      })
+      .catch(() => {
+        localStorage.removeItem("accessToken");
+        setUser(null);
+      });
   }, []);
 
+
   const login = async (email, password) => {
-    // Step 1: get token
     const res = await apiLogin(email, password);
     const token = res.data.token;
 
-    // Step 2: store token immediately
-    localStorage.setItem('accessToken', token);
+    localStorage.setItem("accessToken", token);
 
-    // Step 3: now fetch profile (the Axios interceptor will attach the token)
     const profileRes = await fetchProfile();
 
-    // Step 4: update React state
+    // 🔥 use our improved global updater
     setAuthData(token, profileRes.data);
 
     return profileRes.data;
   };
 
-
-  // 3. Logout: Clears token and user state
+  // Logout
   const logout = () => {
     setAuthData(null, null);
   };

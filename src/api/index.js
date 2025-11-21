@@ -17,6 +17,8 @@
         password,
       });
     };
+    export const updateProfile = (data) =>
+      API.put("/api/v1/customers/me", data);
 export const createCheckoutSession = () =>
   API.post('/api/v1/checkout/create-session');
     export const register = async (data) => {
