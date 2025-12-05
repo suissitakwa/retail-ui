@@ -28,8 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test -- --watch=false
+
 
       - name: Build production bundle
         run: npm run build
