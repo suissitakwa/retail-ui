@@ -15,21 +15,23 @@ export default function Orders() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  useEffect(() => {
-    fetchMyOrders(pageInfo.page, pageInfo.size)
-      .then((res) => {
-        setOrders(res.data.content);
-        setPageInfo((prev) => ({
-          ...prev,
-          totalPages: res.data.totalPages,
-        }));
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch orders", err);
-        setLoading(false);
-      });
-  }, [pageInfo.page, token]);
+ useEffect(() => {
+   setLoading(true);
+   fetchMyOrders(pageInfo.page, pageInfo.size)
+     .then((res) => {
+       setOrders(res.data.content);
+       setPageInfo((prev) => ({
+         ...prev,
+         totalPages: res.data.totalPages,
+       }));
+       setLoading(false);
+     })
+     .catch((err) => {
+       console.error("Failed to fetch orders", err);
+       setLoading(false);
+     });
+ }, [pageInfo.page, pageInfo.size, token]);
+
 
   if (loading)
     return <div className="text-center text-xl p-6">Loading your orders...</div>;

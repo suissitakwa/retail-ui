@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
-  const { setAuthData, user } = useAuth();
+  const { setAuthData } = useAuth();
 
   const [form, setForm] = useState({
     firstname: "",
