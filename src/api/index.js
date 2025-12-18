@@ -46,3 +46,12 @@ export const addToCart = (productId, quantity) =>
   API.post('/api/v1/cart/add', { productId, quantity });
 
 export const clearCart = () => API.delete('/api/v1/cart/clear');
+export const createProductAdmin = (data) =>
+  API.post("/api/v1/products", data);
+
+export const deleteProductAdmin = (id) =>
+  API.delete(`/api/v1/products/${id}`);
+
+
+  export const fetchAllOrdersAdmin = () => API.get("/api/v1/orders/admin/orders");
+  export const fetchAllCustomersAdmin = () => API.get("/api/v1/customers");

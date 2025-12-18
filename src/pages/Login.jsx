@@ -12,14 +12,14 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+try {
+  const profile = await login(form.email, form.password);
+  navigate(profile.role === "ROLE_ADMIN" ? "/admin" : "/");
+} catch (err) {
+  console.error(err);
+  setError("Invalid email or password");
+}
 
-    try {
-      await login(form.email, form.password);
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      setError("Invalid email or password");
-    }
   };
 
   return (
