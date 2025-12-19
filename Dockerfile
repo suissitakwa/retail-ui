@@ -19,15 +19,8 @@ RUN npm run build
 
 # ---------- Stage 2: Serve with Nginx ----------
 FROM nginx:stable-alpine
-
-# Remove default nginx static files
 RUN rm -rf /usr/share/nginx/html/*
-
-# Copy build from previous stage to nginx html folder
 COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80 for HTTP traffic
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
-
-# Run nginx in non-daemon mode
 CMD ["nginx", "-g", "daemon off;"]

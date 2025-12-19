@@ -51,7 +51,10 @@ export const createProductAdmin = (data) =>
 
 export const deleteProductAdmin = (id) =>
   API.delete(`/api/v1/products/${id}`);
-
-
+export const fetchCategories = () => API.get("/api/v1/categories");
+export const deleteOrderAdmin = (id) => API.delete(`/api/v1/orders/${id}`);
   export const fetchAllOrdersAdmin = () => API.get("/api/v1/orders/admin/orders");
   export const fetchAllCustomersAdmin = () => API.get("/api/v1/customers");
+
+export const updateInventoryQty = (productId, quantity) =>
+  API.put(`/api/v1/inventory/product/${productId}?quantity=${quantity}`);
