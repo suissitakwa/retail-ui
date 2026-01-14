@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { createCheckoutSession } from "../api";
 export default function CheckoutButton() {
@@ -11,7 +11,7 @@ export default function CheckoutButton() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("accessToken");
+      //const token = localStorage.getItem("accessToken");
 
       const res = await createCheckoutSession(user.id);
 
