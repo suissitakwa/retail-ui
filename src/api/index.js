@@ -1,15 +1,9 @@
 import axios from 'axios';
 
-const isDev = process.env.NODE_ENV === 'development';
-
-const defaultBaseURL = isDev
-  ? 'http://localhost:8080'
-  : '';
-
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || defaultBaseURL,
-});
 
+  baseURL: process.env.REACT_APP_API_URL || "",
+});
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
@@ -25,8 +19,9 @@ export const login = async (email, password) => {
 export const updateProfile = (data) =>
   API.put('/api/v1/customers/me', data);
 
-export const createCheckoutSession = () =>
-  API.post('/api/v1/checkout/create-session');
+export const createCheckoutSession = (customerId) =>
+  API.post(`/api/v1/orders/checkout?customerId=${customerId}`);
+
 
 export const register = async (data) => {
   return API.post('/auth/register', data);
@@ -41,6 +36,7 @@ export const fetchProfile = () => API.get('/api/v1/customers/me');
 export const fetchCart = () => API.get('/api/v1/cart');
 export const removeFromCart = (productId) =>
   API.delete(`/api/v1/cart/remove/${productId}`);
+
 
 export const addToCart = (productId, quantity) =>
   API.post('/api/v1/cart/add', { productId, quantity });

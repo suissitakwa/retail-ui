@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-
+import { createCheckoutSession } from "../api";
 export default function CheckoutButton() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+
 
   const handleCheckout = async () => {
     try {
@@ -12,15 +13,7 @@ export default function CheckoutButton() {
 
       const token = localStorage.getItem("accessToken");
 
-      const res = await axios.post(
-        `http://localhost:8080/api/v1/orders/checkout?customerId=${user.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await createCheckoutSession(user.id);
 
       window.location.href = res.data.redirectUrl;
     } catch (err) {
