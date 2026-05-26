@@ -15,71 +15,95 @@ export default function Navbar() {
   };
 
   return (
-    <BsNavbar bg="light" expand="lg" className="mb-4 shadow-sm sticky-top">
+    <BsNavbar expand="lg" className="site-navbar sticky-top">
       <Container>
-        <BsNavbar.Brand as={Link} to="/">
-          RetailUI
+        {/* BRAND */}
+        <BsNavbar.Brand as={Link} to="/" className="navbar-brand-custom">
+          <span className="brand-icon">🛍️</span>
+          <span className="brand-name">RetailShop</span>
         </BsNavbar.Brand>
 
-        <BsNavbar.Toggle aria-controls="basic-navbar-nav" />
-        <BsNavbar.Collapse id="basic-navbar-nav">
+        <BsNavbar.Toggle aria-controls="main-navbar" />
+        <BsNavbar.Collapse id="main-navbar">
+          <Nav className="ms-auto align-items-center gap-1">
 
-          <Nav className="ms-auto d-flex align-items-center">
-
-            <NavLink className="nav-link" to="/">
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link${isActive ? ' nav-link-active' : ''}`
+              }
+              to="/"
+              end
+            >
               Home
             </NavLink>
 
-            <NavLink className="nav-link" to="/shop">
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link${isActive ? ' nav-link-active' : ''}`
+              }
+              to="/shop"
+            >
               Shop
             </NavLink>
 
-            {/* ADMIN SECTION */}
+            {/* ADMIN */}
             {user?.role === "ROLE_ADMIN" && (
-              <NavLink className="nav-link text-danger fw-bold" to="/admin">
+              <NavLink className="nav-link nav-link-admin" to="/admin">
                 Admin Panel
               </NavLink>
             )}
 
-            {/* Cart */}
-            <NavLink className="nav-link position-relative me-3" to="/cart">
-              Cart
+            {/* CART */}
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link nav-link-cart${isActive ? ' nav-link-active' : ''}`
+              }
+              to="/cart"
+            >
+              <span className="cart-icon">🛒</span>
+              <span>Cart</span>
               {cartCount > 0 && (
-                <Badge
-                  bg="danger"
-                  pill
-                  className="ms-1 position-absolute top-0 start-100 translate-middle"
-                >
+                <Badge bg="danger" pill className="cart-badge">
                   {cartCount > 99 ? "99+" : cartCount}
                 </Badge>
               )}
             </NavLink>
 
-            {/* Authenticated State */}
+            {/* AUTH */}
             {user ? (
               <>
-                <NavLink className="nav-link" to="/orders">
+                <NavLink
+                  className={({ isActive }) =>
+                    `nav-link${isActive ? ' nav-link-active' : ''}`
+                  }
+                  to="/orders"
+                >
                   My Orders
                 </NavLink>
 
-                <NavLink className="nav-link" to="/profile">
-                  Profile
+                <NavLink
+                  className={({ isActive }) =>
+                    `nav-link${isActive ? ' nav-link-active' : ''}`
+                  }
+                  to="/profile"
+                >
+                  {user.firstname}
                 </NavLink>
 
                 <button
-                  className="btn btn-sm btn-outline-secondary ms-3"
+                  className="btn btn-sm btn-outline-primary ms-2 navbar-logout-btn"
                   onClick={handleLogout}
                 >
-                  Logout ({user.firstname})
+                  Logout
                 </button>
               </>
             ) : (
-              <NavLink
-                className="btn btn-sm btn-primary text-white ms-3"
+              <Link
+                className="btn btn-sm btn-primary text-white ms-2 navbar-login-btn"
                 to="/login"
               >
                 Login
-              </NavLink>
+              </Link>
             )}
           </Nav>
         </BsNavbar.Collapse>
