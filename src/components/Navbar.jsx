@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { Navbar as BsNavbar, Nav, Container, Badge } from "react-bootstrap";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import NotificationBell from "./NotificationBell.jsx";
 
 export default function Navbar() {
   const { totalItems: cartCount } = useCart();
@@ -85,10 +86,21 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `nav-link${isActive ? ' nav-link-active' : ''}`
                   }
+                  to="/copilot"
+                >
+                  AI Assistant
+                </NavLink>
+
+                <NavLink
+                  className={({ isActive }) =>
+                    `nav-link${isActive ? ' nav-link-active' : ''}`
+                  }
                   to="/profile"
                 >
                   {user.firstname}
                 </NavLink>
+
+                <NotificationBell />
 
                 <button
                   className="btn btn-sm btn-outline-primary ms-2 navbar-logout-btn"
