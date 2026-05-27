@@ -51,7 +51,7 @@ try {
             required
           />
 
-          <button type="submit" className="btn-primary w-full mt-3">
+          <button type="submit" className="btn btn-primary w-100 mt-3">
             Login
           </button>
           <p className="auth-subtext mt-3">

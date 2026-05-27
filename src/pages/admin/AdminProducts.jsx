@@ -75,13 +75,13 @@ export default function AdminProducts() {
   };
 
   return (
-    <div className="p-10">
-      <h1 className="text-3xl font-bold mb-6">📦 Manage Products</h1>
+    <div className="container py-4">
+      <h1 className="page-title">📦 Manage Products</h1>
 
       {error && <p className="text-danger">{error}</p>}
 
       <form onSubmit={handleCreate} className="bg-white p-4 border rounded mb-8">
-        <h2 className="text-xl font-semibold mb-3">Add Product</h2>
+        <h2 className="fw-semibold fs-5 mb-3">Add Product</h2>
 
         <input className="form-control mb-2" placeholder="Name"
           value={form.name}

@@ -41,7 +41,7 @@ export default function OrderDetailsDrawer({ order, onClose }) {
         </div>
 
         <div className="drawer-footer">
-          <button className="btn-primary w-full" onClick={onClose}>
+          <button className="btn btn-primary w-100" onClick={onClose}>
             Close
           </button>
         </div>

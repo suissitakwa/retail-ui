@@ -4,59 +4,47 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 export default function Success() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
   const orderId = searchParams.get("orderId");
 
-  // Auto-redirect to My Orders page
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/orders");
-    }, 2000); // 2 seconds
-
+    const timer = setTimeout(() => navigate("/orders"), 5000);
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div className="container mt-5 flex flex-col items-center text-center">
+    <div className="container mt-5 d-flex flex-column align-items-center text-center">
 
-      {/* Success Icon */}
-      <div className="bg-green-100 text-green-600 p-6 rounded-full shadow-md mb-4">
+      {/* Success icon */}
+      <div className="success-icon mb-4">
         <svg
-          className="w-14 h-14"
+          width="56" height="56"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 13l4 4L19 7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
 
-      {/* Title */}
-      <h1 className="text-3xl font-bold text-green-600">
+      <h1 className="fw-bold text-success fs-3">
         Payment Successful 🎉
       </h1>
 
-      <p className="text-gray-600 mt-2">
+      <p className="text-muted mt-2">
         Your order has been placed successfully.
       </p>
 
       {orderId && (
-        <p className="mt-3 text-lg">
+        <p className="mt-3">
           <strong>Order ID:</strong> {orderId}
         </p>
       )}
 
-      {/* Info / Redirect notice */}
-      <p className="text-sm text-gray-500 mt-2">
-        Redirecting you to <strong>My Orders</strong>...
+      <p className="text-muted small mt-2">
+        Redirecting you to <strong>My Orders</strong> in 5 seconds…
       </p>
 
-      {/* Fallback Button */}
       <Link to="/orders" className="btn btn-primary mt-4">
         View My Orders
       </Link>
