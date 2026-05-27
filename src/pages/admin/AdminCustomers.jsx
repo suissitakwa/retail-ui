@@ -15,8 +15,8 @@ export default function AdminCustomers() {
   }, []);
 
   return (
-    <div className="p-10">
-      <h1 className="text-3xl font-bold mb-4">👥 Manage Customers</h1>
+    <div className="container py-4">
+      <h1 className="page-title">👥 Manage Customers</h1>
 
       {error && <p className="text-danger">{error}</p>}
 
@@ -25,7 +25,7 @@ export default function AdminCustomers() {
       ) : (
         <div className="bg-white border rounded p-3">
           {customers.map((c) => (
-            <div key={c.id} className="border-b py-2">
+            <div key={c.id} className="border-bottom py-2">
               <div className="fw-bold">{c.firstname} {c.lastname}</div>
               <div>{c.email}</div>
               <div className="text-muted">{c.address}</div>

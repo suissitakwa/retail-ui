@@ -151,7 +151,7 @@ export default function Register() {
             required
           />
 
-          <button type="submit" className="btn-primary w-full mt-4">
+          <button type="submit" className="btn btn-primary w-100 mt-4">
             Create Account
           </button>
 

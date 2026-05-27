@@ -5,7 +5,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
-  const { cartCount } = useCart();
+  const { totalItems: cartCount } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
