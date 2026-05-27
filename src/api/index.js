@@ -54,3 +54,12 @@ export const deleteOrderAdmin = (id) => API.delete(`/api/v1/orders/${id}`);
 
 export const updateInventoryQty = (productId, quantity) =>
   API.put(`/api/v1/inventory/product/${productId}?quantity=${quantity}`);
+
+// Notifications
+export const fetchMyNotifications = () => API.get('/api/v1/notifications/my');
+export const fetchUnreadCount    = () => API.get('/api/v1/notifications/unread-count');
+export const markNotificationRead = (id) => API.patch(`/api/v1/notifications/${id}/read`);
+
+// Copilot
+export const chatWithCopilot = (message, orderId) =>
+  API.post('/api/v1/copilot/chat', { message, orderId: orderId || null });

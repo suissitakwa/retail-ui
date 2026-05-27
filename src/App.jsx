@@ -19,6 +19,7 @@ import Login from './pages/Login';
 import Orders from './pages/Orders';
 import Register from './pages/Register';
 import ProtectedRoute from './pages/ProtectedRoute';
+import Copilot from './pages/Copilot';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -63,6 +64,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+<Route
+  path="/copilot"
+  element={
+    <ProtectedRoute>
+      <Copilot />
+    </ProtectedRoute>
+  }
+/>
 
 <Route
   path="/admin"
