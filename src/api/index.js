@@ -1,14 +1,21 @@
 import axios from 'axios';
 
 const API = axios.create({
-
   baseURL: process.env.REACT_APP_API_URL || "",
 });
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// Notification-service (port 8086 in dev; set REACT_APP_NOTIF_API_URL in .env)
+const NOTIF_API = axios.create({
+  baseURL: process.env.REACT_APP_NOTIF_API_URL || process.env.REACT_APP_API_URL || "",
+});
+NOTIF_API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
@@ -55,10 +62,10 @@ export const deleteOrderAdmin = (id) => API.delete(`/api/v1/orders/${id}`);
 export const updateInventoryQty = (productId, quantity) =>
   API.put(`/api/v1/inventory/product/${productId}?quantity=${quantity}`);
 
-// Notifications
-export const fetchMyNotifications = () => API.get('/api/v1/notifications/my');
-export const fetchUnreadCount    = () => API.get('/api/v1/notifications/unread-count');
-export const markNotificationRead = (id) => API.patch(`/api/v1/notifications/${id}/read`);
+// Notifications — routed to notification-service (REACT_APP_NOTIF_API_URL)
+export const fetchMyNotifications = () => NOTIF_API.get('/api/v1/notifications/my');
+export const fetchUnreadCount    = () => NOTIF_API.get('/api/v1/notifications/unread-count');
+export const markNotificationRead = (id) => NOTIF_API.patch(`/api/v1/notifications/${id}/read`);
 
 // Copilot
 export const chatWithCopilot = (message, orderId) =>
