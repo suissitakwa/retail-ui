@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchMyOrders } from "../api";
 import { useAuth } from "../context/AuthContext";
 
-const statusMap = {
+const STATUS_CLASS = {
   COMPLETED: "status-completed",
   PENDING:   "status-pending",
   CANCELLED: "status-cancelled",
@@ -10,23 +10,20 @@ const statusMap = {
 
 export default function Orders() {
   const { token } = useAuth();
-  const [orders, setOrders]     = useState([]);
+  const [orders,   setOrders]   = useState([]);
   const [pageInfo, setPageInfo] = useState({ page: 0, size: 10, totalPages: 0 });
-  const [loading, setLoading]   = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading,  setLoading]  = useState(true);
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     fetchMyOrders(pageInfo.page, pageInfo.size)
-      .then((res) => {
+      .then(res => {
         setOrders(res.data.content);
-        setPageInfo((prev) => ({ ...prev, totalPages: res.data.totalPages }));
+        setPageInfo(p => ({ ...p, totalPages: res.data.totalPages }));
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Failed to fetch orders", err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, [pageInfo.page, pageInfo.size, token]);
 
   if (loading)
@@ -39,60 +36,66 @@ export default function Orders() {
 
   if (!orders.length)
     return (
-      <div className="text-center p-4 text-muted">
-        You have no orders yet.
+      <div className="site-main">
+        <h2 className="page-title">My Orders</h2>
+        <div className="empty-state">
+          <p style={{ fontSize: '48px', marginBottom: '12px' }}>📦</p>
+          <p style={{ fontWeight: 600, marginBottom: '6px' }}>No orders yet</p>
+          <p style={{ color: 'var(--muted)', fontSize: '14px' }}>Your orders will appear here once you make a purchase.</p>
+        </div>
       </div>
     );
 
   return (
     <>
-      <div className="container py-4">
+      <div className="site-main">
         <h2 className="page-title">My Orders</h2>
 
         <div className="space-y-6">
-          {orders.map((order) => (
+          {orders.map(order => (
             <div key={order.id} className="order-card">
-              {/* HEADER */}
               <div className="order-header">
                 <div>
-                  <h3 className="mb-1">Order #{order.id}</h3>
-                  <p className="text-muted mb-0">
-                    Placed on {new Date(order.createdDate).toLocaleString()}
+                  <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '4px' }}>
+                    Order #{order.id} · <span style={{ fontFamily: 'monospace', color: 'var(--muted)', fontSize: '12px' }}>{order.reference}</span>
+                  </h3>
+                  <p style={{ fontSize: '12px', color: 'var(--muted)', margin: 0 }}>
+                    {new Date(order.createdDate).toLocaleString()}
                   </p>
                 </div>
-                <span className={`order-status-tag ${statusMap[order.paymentMethod]}`}>
-                  {order.paymentMethod}
+                <span className={`order-status-tag ${STATUS_CLASS[order.status] || 'status-pending'}`}>
+                  {order.status}
                 </span>
               </div>
 
-              {/* ITEM PREVIEW */}
-              <div className="row g-3 mt-2">
-                {order.items.slice(0, 2).map((item) => (
-                  <div key={item.id} className="col-md-6">
-                    <div className="drawer-item">
-                      <img
-                        src="https://placehold.co/80x80"
-                        alt={item.productName}
-                        className="drawer-item-img"
-                      />
-                      <div>
-                        <p className="fw-medium mb-1">{item.productName}</p>
-                        <p className="text-muted mb-0">
-                          {item.quantity} × ${item.price}
-                        </p>
-                      </div>
-                    </div>
+              {/* Item preview */}
+              {order.items?.slice(0, 2).map(item => (
+                <div key={item.id} className="drawer-item" style={{ padding: '10px 0' }}>
+                  <img
+                    src="https://placehold.co/60x60/18181f/8884a0?text=📦"
+                    alt={item.productName}
+                    className="drawer-item-img"
+                    style={{ width: 52, height: 52 }}
+                  />
+                  <div>
+                    <p style={{ margin: '0 0 3px', fontSize: '14px', fontWeight: 500 }}>{item.productName}</p>
+                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--muted)' }}>
+                      {item.quantity} × ${Number(item.price).toFixed(2)}
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+              {order.items?.length > 2 && (
+                <p style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>
+                  +{order.items.length - 2} more item{order.items.length - 2 > 1 ? 's' : ''}
+                </p>
+              )}
 
-              {/* FOOTER */}
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <p className="fw-bold fs-6 mb-0">Total: ${order.totalAmount}</p>
-                <button
-                  className="view-details-btn"
-                  onClick={() => setSelectedOrder(order)}
-                >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px' }}>
+                <span style={{ fontWeight: 700, color: 'var(--accent)', fontSize: '16px' }}>
+                  ${Number(order.totalAmount).toFixed(2)}
+                </span>
+                <button className="view-details-btn" onClick={() => setSelected(order)}>
                   View details →
                 </button>
               </div>
@@ -100,56 +103,67 @@ export default function Orders() {
           ))}
         </div>
 
-        {/* PAGINATION */}
-        <div className="pagination-controls">
-          <button
-            disabled={pageInfo.page === 0}
-            onClick={() => setPageInfo((prev) => ({ ...prev, page: prev.page - 1 }))}
-          >
-            Previous
-          </button>
-          <span>Page {pageInfo.page + 1} / {pageInfo.totalPages}</span>
-          <button
-            disabled={pageInfo.page + 1 >= pageInfo.totalPages}
-            onClick={() => setPageInfo((prev) => ({ ...prev, page: prev.page + 1 }))}
-          >
-            Next
-          </button>
-        </div>
+        {/* Pagination */}
+        {pageInfo.totalPages > 1 && (
+          <div className="pagination-controls">
+            <button
+              disabled={pageInfo.page === 0}
+              onClick={() => setPageInfo(p => ({ ...p, page: p.page - 1 }))}
+            >← Previous</button>
+            <span>Page {pageInfo.page + 1} of {pageInfo.totalPages}</span>
+            <button
+              disabled={pageInfo.page + 1 >= pageInfo.totalPages}
+              onClick={() => setPageInfo(p => ({ ...p, page: p.page + 1 }))}
+            >Next →</button>
+          </div>
+        )}
       </div>
 
-      {/* ORDER DETAILS DRAWER */}
-      {selectedOrder && (
-        <div className="drawer-overlay" onClick={() => setSelectedOrder(null)}>
-          <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
+      {/* Order detail drawer */}
+      {selected && (
+        <div className="drawer-overlay" onClick={() => setSelected(null)}>
+          <div className="drawer-panel" onClick={e => e.stopPropagation()}>
             <div className="drawer-header">
-              <h3>Order #{selectedOrder.id}</h3>
-              <button className="drawer-close-btn" onClick={() => setSelectedOrder(null)}>×</button>
+              <h3>Order #{selected.id}</h3>
+              <button className="drawer-close-btn" onClick={() => setSelected(null)}>✕</button>
             </div>
 
             <div className="drawer-section">
-              <h4 className="mb-3 fw-semibold">Order Items</h4>
-              {selectedOrder.items.map((item) => (
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--muted)' }}>Reference</span>
+                <p style={{ fontFamily: 'monospace', margin: '2px 0 0', fontSize: '13px' }}>{selected.reference}</p>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--muted)' }}>Placed</span>
+                <p style={{ margin: '2px 0 0', fontSize: '13px' }}>{new Date(selected.createdDate).toLocaleString()}</p>
+              </div>
+
+              <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '12px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Items</p>
+              {selected.items?.map(item => (
                 <div key={item.id} className="drawer-item">
                   <img
-                    src="https://placehold.co/80x80"
+                    src="https://placehold.co/60x60/18181f/8884a0?text=📦"
                     alt={item.productName}
                     className="drawer-item-img"
                   />
                   <div>
-                    <p className="mb-1">{item.productName}</p>
-                    <p className="text-muted mb-0">
-                      {item.quantity} × ${item.price}
+                    <p style={{ margin: '0 0 3px', fontSize: '14px', fontWeight: 500 }}>{item.productName}</p>
+                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--muted)' }}>
+                      {item.quantity} × ${Number(item.price).toFixed(2)}
                     </p>
                   </div>
+                  <span style={{ marginLeft: 'auto', fontWeight: 700, color: 'var(--accent)' }}>
+                    ${(item.quantity * item.price).toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>
 
-            <div className="drawer-footer">
-              <p className="fw-bold fs-5 mb-0">
-                Total: ${selectedOrder.totalAmount}
-              </p>
+            <div className="drawer-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: 'var(--muted)', fontSize: '14px' }}>Total</span>
+              <span style={{ fontWeight: 700, fontSize: '20px', color: 'var(--accent)' }}>
+                ${Number(selected.totalAmount).toFixed(2)}
+              </span>
             </div>
           </div>
         </div>

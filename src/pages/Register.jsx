@@ -1,162 +1,107 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
-import { register as apiRegister, fetchProfile } from '../api';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { register as apiRegister, fetchProfile } from "../api";
 
 export default function Register() {
   const [form, setForm] = useState({
-    firstname: '',
-    lastname: '',
-    email: '',
-    password: '',
-    street: '',
-    city: '',
-    state: '',
-    postalCode: '',
-    country: '',
+    firstname: "", lastname: "", email: "", password: "",
+    street: "", city: "", state: "", postalCode: "", country: "",
   });
-
-  const [error, setError] = useState('');
+  const [error,   setError]   = useState("");
+  const [loading, setLoading] = useState(false);
   const { setAuthData } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Build a full address string
-    const fullAddress = `${form.street}, ${form.city}, ${form.state} ${form.postalCode}, ${form.country}`;
-
-    const payload = {
-      firstname: form.firstname,
-      lastname: form.lastname,
-      email: form.email,
-      password: form.password,
-      role: "ROLE_CUSTOMER",
-      address: fullAddress
-    };
-
+    setError("");
+    setLoading(true);
+    const address = [form.street, form.city, form.state, form.postalCode, form.country]
+      .filter(Boolean).join(", ");
     try {
-      const res = await apiRegister(payload);
-      const token = res.data.token;
-
-      localStorage.setItem('accessToken', token);
-
+      const res = await apiRegister({
+        firstname: form.firstname, lastname: form.lastname,
+        email: form.email, password: form.password,
+        role: "ROLE_CUSTOMER", address,
+      });
+      const token = res.data.accessToken || res.data.token;
+      localStorage.setItem("accessToken", token);
       const profileRes = await fetchProfile();
       setAuthData(token, profileRes.data);
-
-      navigate('/');
-    } catch (err) {
-      console.error('Registration failed', err);
-      setError('Registration failed – try again.');
+      navigate("/");
+    } catch {
+      setError("Registration failed. The email may already be in use.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h2>Create your Account</h2>
-        <p className="auth-subtext">Join our shop and start ordering today</p>
+      <div className="auth-card" style={{ maxWidth: 520 }}>
+        <h2>Create your account</h2>
+        <p className="auth-subtext">Join RetailShop and start ordering today</p>
 
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-
-          <label>First Name</label>
-          <input
-            type="text"
-            name="firstname"
-            value={form.firstname}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Last Name</label>
-          <input
-            type="text"
-            name="lastname"
-            value={form.lastname}
-            onChange={handleChange}
-            required
-          />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+            <div>
+              <label>First Name</label>
+              <input type="text" name="firstname" value={form.firstname} onChange={handleChange} required placeholder="Takwa" />
+            </div>
+            <div>
+              <label>Last Name</label>
+              <input type="text" name="lastname"  value={form.lastname}  onChange={handleChange} required placeholder="Suissi" />
+            </div>
+          </div>
 
           <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
+          <input type="email" name="email" value={form.email} onChange={handleChange} required placeholder="you@example.com" />
 
           <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <input type="password" name="password" value={form.password} onChange={handleChange} required placeholder="At least 6 characters" />
 
-          {/* Address Section */}
-          <h3 style={{ marginTop: "25px", color: "var(--color-secondary)" }}>
+          <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '24px', marginBottom: '0' }}>
             Shipping Address
-          </h3>
+          </p>
 
           <label>Street</label>
-          <input
-            type="text"
-            name="street"
-            value={form.street}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="street"     value={form.street}     onChange={handleChange} required placeholder="123 Main St" />
 
-          <label>City</label>
-          <input
-            type="text"
-            name="city"
-            value={form.city}
-            onChange={handleChange}
-            required
-          />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+            <div>
+              <label>City</label>
+              <input type="text" name="city"  value={form.city}  onChange={handleChange} required placeholder="New York" />
+            </div>
+            <div>
+              <label>State</label>
+              <input type="text" name="state" value={form.state} onChange={handleChange} required placeholder="NY" />
+            </div>
+            <div>
+              <label>Postal Code</label>
+              <input type="text" name="postalCode" value={form.postalCode} onChange={handleChange} required placeholder="10001" />
+            </div>
+            <div>
+              <label>Country</label>
+              <input type="text" name="country" value={form.country} onChange={handleChange} required placeholder="USA" />
+            </div>
+          </div>
 
-          <label>State</label>
-          <input
-            type="text"
-            name="state"
-            value={form.state}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Postal Code</label>
-          <input
-            type="text"
-            name="postalCode"
-            value={form.postalCode}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Country</label>
-          <input
-            type="text"
-            name="country"
-            value={form.country}
-            onChange={handleChange}
-            required
-          />
-
-          <button type="submit" className="btn btn-primary w-100 mt-4">
-            Create Account
+          <button
+            type="submit"
+            className="add-btn"
+            disabled={loading}
+            style={{ width: '100%', marginTop: '24px', padding: '13px', borderRadius: '10px', fontSize: '15px' }}
+          >
+            {loading ? 'Creating account…' : 'Create Account →'}
           </button>
 
-          <p className="auth-subtext mt-3">
-            Already have an account? <Link to="/login">Login</Link>
+          <p className="auth-subtext" style={{ textAlign: 'center', marginTop: '16px' }}>
+            Already have an account? <Link to="/login">Sign in</Link>
           </p>
         </form>
       </div>

@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { Navbar as BsNavbar, Nav, Container, Badge } from "react-bootstrap";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import NotificationBell from "./NotificationBell.jsx";
@@ -9,117 +8,93 @@ export default function Navbar() {
   const { totalItems: cartCount } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = () => { logout(); navigate("/login"); };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (search.trim()) navigate(`/shop?q=${encodeURIComponent(search.trim())}`);
   };
 
   return (
-    <BsNavbar expand="lg" className="site-navbar sticky-top">
-      <Container>
-        {/* BRAND */}
-        <BsNavbar.Brand as={Link} to="/" className="navbar-brand-custom">
-          <span className="brand-icon">🛍️</span>
-          <span className="brand-name">RetailShop</span>
-        </BsNavbar.Brand>
+    <>
+      {/* ── TOP BAR ─────────────────────────────────── */}
+      <nav className="site-navbar sticky-top">
+        <div className="topbar-inner">
 
-        <BsNavbar.Toggle aria-controls="main-navbar" />
-        <BsNavbar.Collapse id="main-navbar">
-          <Nav className="ms-auto align-items-center gap-1">
+          {/* Logo */}
+          <Link to="/" className="brand-name">RetailShop</Link>
 
-            <NavLink
-              className={({ isActive }) =>
-                `nav-link${isActive ? ' nav-link-active' : ''}`
-              }
-              to="/"
-              end
-            >
-              Home
-            </NavLink>
+          {/* Search */}
+          <form className="topbar-search" onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Search for anything..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            <button type="submit" className="topbar-search-btn" aria-label="Search">⌕</button>
+          </form>
 
-            <NavLink
-              className={({ isActive }) =>
-                `nav-link${isActive ? ' nav-link-active' : ''}`
-              }
-              to="/shop"
-            >
-              Shop
-            </NavLink>
-
-            {/* ADMIN */}
-            {user?.role === "ROLE_ADMIN" && (
-              <NavLink className="nav-link nav-link-admin" to="/admin">
-                Admin Panel
-              </NavLink>
-            )}
-
-            {/* CART */}
-            <NavLink
-              className={({ isActive }) =>
-                `nav-link nav-link-cart${isActive ? ' nav-link-active' : ''}`
-              }
-              to="/cart"
-            >
-              <span className="cart-icon">🛒</span>
-              <span>Cart</span>
-              {cartCount > 0 && (
-                <Badge bg="danger" pill className="cart-badge">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </Badge>
-              )}
-            </NavLink>
-
-            {/* AUTH */}
+          {/* Actions */}
+          <div className="topbar-actions">
             {user ? (
               <>
-                <NavLink
-                  className={({ isActive }) =>
-                    `nav-link${isActive ? ' nav-link-active' : ''}`
-                  }
-                  to="/orders"
-                >
-                  My Orders
-                </NavLink>
-
-                <NavLink
-                  className={({ isActive }) =>
-                    `nav-link${isActive ? ' nav-link-active' : ''}`
-                  }
-                  to="/copilot"
-                >
-                  AI Assistant
-                </NavLink>
-
-                <NavLink
-                  className={({ isActive }) =>
-                    `nav-link${isActive ? ' nav-link-active' : ''}`
-                  }
-                  to="/profile"
-                >
-                  {user.firstname}
-                </NavLink>
-
+                <Link to="/profile" className="topbar-link">
+                  <small>Hello, {user.firstname}</small>
+                  Account
+                </Link>
+                <Link to="/orders" className="topbar-link">
+                  <small>Returns &amp;</small>
+                  Orders
+                </Link>
+                <Link to="/copilot" className="topbar-link">
+                  <small>✨ AI</small>
+                  Copilot
+                </Link>
                 <NotificationBell />
-
-                <button
-                  className="btn btn-sm btn-outline-primary ms-2 navbar-logout-btn"
-                  onClick={handleLogout}
-                >
+                <Link to="/cart" className="cart-btn">
+                  🛒 Cart
+                  {cartCount > 0 && (
+                    <span className="cart-badge">{cartCount > 99 ? "99+" : cartCount}</span>
+                  )}
+                </Link>
+                <button className="navbar-logout-btn btn btn-sm" onClick={handleLogout}>
                   Logout
                 </button>
               </>
             ) : (
-              <Link
-                className="btn btn-sm btn-primary text-white ms-2 navbar-login-btn"
-                to="/login"
-              >
-                Login
-              </Link>
+              <>
+                <Link to="/cart" className="cart-btn">
+                  🛒 Cart
+                  {cartCount > 0 && (
+                    <span className="cart-badge">{cartCount > 99 ? "99+" : cartCount}</span>
+                  )}
+                </Link>
+                <Link to="/login" className="cart-btn">Sign in</Link>
+              </>
             )}
-          </Nav>
-        </BsNavbar.Collapse>
-      </Container>
-    </BsNavbar>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── NAV STRIP ───────────────────────────────── */}
+      <div className="nav-strip">
+        <NavLink to="/" end className={({ isActive }) => `nav-strip-item${isActive ? " active" : ""}`}>🏠 Home</NavLink>
+        <NavLink to="/shop" className={({ isActive }) => `nav-strip-item${isActive ? " active" : ""}`}>⚡ Today's Deals</NavLink>
+        <NavLink to="/shop?cat=Electronics" className="nav-strip-item">📱 Electronics</NavLink>
+        <NavLink to="/shop?cat=Fashion"     className="nav-strip-item">👗 Fashion</NavLink>
+        <NavLink to="/shop?cat=Home"        className="nav-strip-item">🏡 Home &amp; Kitchen</NavLink>
+        <NavLink to="/shop?cat=Beauty"      className="nav-strip-item">💄 Beauty</NavLink>
+        <NavLink to="/shop?cat=Gaming"      className="nav-strip-item">🎮 Gaming</NavLink>
+        <NavLink to="/shop?cat=Health"      className="nav-strip-item">🧘 Health</NavLink>
+        {user?.role === "ROLE_ADMIN" && (
+          <NavLink to="/admin" className={({ isActive }) => `nav-strip-item${isActive ? " active" : ""}`} style={{ color: "#f0a04b" }}>
+            ⚙ Admin
+          </NavLink>
+        )}
+      </div>
+    </>
   );
 }
