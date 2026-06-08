@@ -12,11 +12,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
 
-  const setAuthData = (token, profileData) => {
+  const setAuthData = (token, profileData, refreshToken = null) => {
     if (token) {
       localStorage.setItem("accessToken", token);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
     } else {
       localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
     }
 
     setUser(profileData ? { ...profileData } : null);
@@ -29,26 +31,32 @@ export const AuthProvider = ({ children }) => {
 
     fetchProfile()
       .then(res => {
-        // 🔥 Force React to re-render with new profile object
         setUser({ ...res.data });
       })
       .catch(() => {
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         setUser(null);
       });
+  }, []);
+
+  // Listen for silent logout triggered by the JWT refresh interceptor
+  useEffect(() => {
+    const handleAuthLogout = () => setAuthData(null, null);
+    window.addEventListener('auth:logout', handleAuthLogout);
+    return () => window.removeEventListener('auth:logout', handleAuthLogout);
   }, []);
 
 
   const login = async (email, password) => {
     const res = await apiLogin(email, password);
-    const token = res.data.token;
+    const { token, refreshToken } = res.data;
 
     localStorage.setItem("accessToken", token);
+    if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
     const profileRes = await fetchProfile();
-
-    // 🔥 use our improved global updater
-    setAuthData(token, profileRes.data);
+    setAuthData(token, profileRes.data, refreshToken);
 
     return profileRes.data;
   };

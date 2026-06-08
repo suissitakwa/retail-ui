@@ -19,6 +19,79 @@ NOTIF_API.interceptors.request.use((config) => {
   return config;
 });
 
+// ── JWT auto-refresh ───────────────────────────────────────────────────────
+// On 401, attempt a silent token refresh then replay the original request.
+// If refresh fails (expired / invalid), clear tokens so AuthContext redirects to login.
+let isRefreshing = false;
+let refreshQueue = []; // pending requests waiting for the new token
+
+const processQueue = (error, token = null) => {
+  refreshQueue.forEach(({ resolve, reject }) =>
+    error ? reject(error) : resolve(token)
+  );
+  refreshQueue = [];
+};
+
+const attachRefreshInterceptor = (instance) => {
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const original = error.config;
+      if (error.response?.status !== 401 || original._retry) {
+        return Promise.reject(error);
+      }
+
+      // Don't intercept the refresh call itself
+      if (original.url?.includes('/auth/refresh')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.dispatchEvent(new Event('auth:logout'));
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          refreshQueue.push({ resolve, reject });
+        }).then((token) => {
+          original.headers.Authorization = `Bearer ${token}`;
+          return instance(original);
+        });
+      }
+
+      original._retry = true;
+      isRefreshing = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) throw new Error('No refresh token');
+
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_API_URL || ''}/auth/refresh`,
+          { refreshToken }
+        );
+
+        localStorage.setItem('accessToken', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+
+        processQueue(null, data.token);
+        original.headers.Authorization = `Bearer ${data.token}`;
+        return instance(original);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.dispatchEvent(new Event('auth:logout'));
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+  );
+};
+
+attachRefreshInterceptor(API);
+attachRefreshInterceptor(NOTIF_API);
+
 export const login = async (email, password) => {
   return API.post('/auth/login', { email, password });
 };
