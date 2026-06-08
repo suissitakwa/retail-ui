@@ -4,6 +4,15 @@
 
 Full-featured e-commerce frontend for the **Retail Platform** — built with React 19, deployed to GKE via Docker + nginx, and styled with a custom dark theme (Novamart).
 
+![Home page — Novamart dark theme](docs/screenshots/home.png)
+
+<details>
+<summary>Login page</summary>
+
+![Login page](docs/screenshots/login.png)
+
+</details>
+
 **Backend API:** https://github.com/suissitakwa/retail  
 **Microservices layer:** https://github.com/suissitakwa/retail-microservices  
 **Infrastructure / CD:** https://github.com/suissitakwa/retail-infra  
