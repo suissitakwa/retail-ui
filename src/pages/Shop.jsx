@@ -37,13 +37,13 @@ export default function Shop() {
   const [notification,    setNotification]    = useState({ message: '', type: '' });
 
   useEffect(() => {
-    fetchCategories().then(r => setCategories(r.data || [])).catch(() => {});
+    fetchCategories().then(r => setCategories(Array.isArray(r.data) ? r.data : [])).catch(() => {});
   }, []);
 
   useEffect(() => {
     setLoading(true);
     fetchProducts()
-      .then(r => { setProducts(r.data || []); setLoading(false); })
+      .then(r => { setProducts(Array.isArray(r.data) ? r.data : []); setLoading(false); })
       .catch(() => { setLoading(false); setNotification({ message: 'Could not load products.', type: 'error' }); });
   }, []);
 

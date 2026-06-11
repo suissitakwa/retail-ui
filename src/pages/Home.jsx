@@ -36,14 +36,14 @@ export default function Home() {
   useEffect(() => {
     fetchProducts()
       .then(r => {
-        const all = r.data || [];
-        setHeroProduct(all[0] || null);        // first product → hero card
-        setProducts(all.slice(1, 9));           // next 8 → deals grid
+        const all = Array.isArray(r.data) ? r.data : [];
+        setHeroProduct(all[0] || null);
+        setProducts(all.slice(1, 9));
       })
       .catch(() => {});
 
     fetchCategories()
-      .then(r => setCategories(r.data || []))
+      .then(r => setCategories(Array.isArray(r.data) ? r.data : []))
       .catch(() => {});
   }, []);
 
