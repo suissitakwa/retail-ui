@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { chatWithCopilot } from '../api';
+import { useNavigate } from 'react-router-dom';
+import { chatWithCopilot, cancelOrder } from '../api';
 
 const SUGGESTIONS = [
   'What is the status of my latest order?',
@@ -7,40 +8,109 @@ const SUGGESTIONS = [
   'Show me my most recent purchase.',
 ];
 
+function ActionButtons({ actions, onAction, pendingCancel, onConfirmCancel, onAbortCancel }) {
+  if (!actions || actions.length === 0) return null;
+  return (
+    <div className="copilot-actions">
+      {actions.map((action, i) => {
+        if (action.name === 'CANCEL_NOT_ALLOWED') {
+          return (
+            <span key={i} className="copilot-action-chip disabled">
+              {action.outputSummary}
+            </span>
+          );
+        }
+        if (action.name === 'CANCEL_ORDER_CONFIRM') {
+          const orderId = action.input?.orderId;
+          if (pendingCancel === orderId) {
+            return (
+              <span key={i} className="copilot-action-confirm">
+                <span className="copilot-action-confirm-label">Confirm cancellation?</span>
+                <button className="copilot-action-btn danger" onClick={() => onConfirmCancel(orderId)}>
+                  Yes, cancel
+                </button>
+                <button className="copilot-action-btn" onClick={onAbortCancel}>
+                  Keep order
+                </button>
+              </span>
+            );
+          }
+          return (
+            <button key={i} className="copilot-action-btn danger" onClick={() => onAction(action)}>
+              {action.outputSummary}
+            </button>
+          );
+        }
+        return (
+          <button key={i} className="copilot-action-btn" onClick={() => onAction(action)}>
+            {action.outputSummary}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Copilot() {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
       text: "Hi! I'm your AI shopping assistant. Ask me anything about your orders. You can also mention a specific Order ID if you want details about a particular order.",
+      actions: [],
     },
   ]);
-  const [input, setInput]       = useState('');
-  const [orderId, setOrderId]   = useState('');
-  const [loading, setLoading]   = useState(false);
-  const bottomRef               = useRef(null);
+  const [input, setInput]           = useState('');
+  const [orderId, setOrderId]       = useState('');
+  const [loading, setLoading]       = useState(false);
+  const [pendingCancel, setPending] = useState(null);
+  const bottomRef                   = useRef(null);
 
   const scrollToBottom = () =>
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+  const pushAssistant = (text, actions = []) =>
+    setMessages(prev => [...prev, { role: 'assistant', text, actions }]);
 
   const sendMessage = async (text) => {
     const userText = (text || input).trim();
     if (!userText || loading) return;
 
-    const userMsg = { role: 'user', text: userText };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages(prev => [...prev, { role: 'user', text: userText, actions: [] }]);
     setInput('');
+    setPending(null);
     setLoading(true);
     setTimeout(scrollToBottom, 50);
 
     try {
       const res = await chatWithCopilot(userText, orderId ? Number(orderId) : null);
-      const answer = res.data?.answer || 'Sorry, I could not get a response.';
-      setMessages(prev => [...prev, { role: 'assistant', text: answer }]);
+      const answer  = res.data?.answer  || 'Sorry, I could not get a response.';
+      const actions = Array.isArray(res.data?.actions) ? res.data.actions : [];
+      pushAssistant(answer, actions);
     } catch {
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', text: 'Something went wrong. Please try again.' },
-      ]);
+      pushAssistant('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+      setTimeout(scrollToBottom, 50);
+    }
+  };
+
+  const handleAction = (action) => {
+    if (action.name === 'OPEN_ORDER_DETAILS' || action.name === 'CHECK_PAYMENTS') {
+      navigate('/orders');
+    } else if (action.name === 'CANCEL_ORDER_CONFIRM') {
+      setPending(action.input?.orderId);
+    }
+  };
+
+  const handleConfirmCancel = async (id) => {
+    setPending(null);
+    setLoading(true);
+    try {
+      await cancelOrder(id);
+      pushAssistant(`Order #${id} has been cancelled successfully.`);
+    } catch {
+      pushAssistant(`Could not cancel order #${id}. It may have already been processed.`);
     } finally {
       setLoading(false);
       setTimeout(scrollToBottom, 50);
@@ -78,8 +148,19 @@ export default function Copilot() {
                 {m.role === 'assistant' && (
                   <span className="copilot-avatar">🤖</span>
                 )}
-                <div className={`copilot-bubble ${m.role}`}>
-                  {m.text}
+                <div className="copilot-bubble-with-actions">
+                  <div className={`copilot-bubble ${m.role}`}>
+                    {m.text}
+                  </div>
+                  {m.role === 'assistant' && (
+                    <ActionButtons
+                      actions={m.actions}
+                      onAction={handleAction}
+                      pendingCancel={pendingCancel}
+                      onConfirmCancel={handleConfirmCancel}
+                      onAbortCancel={() => setPending(null)}
+                    />
+                  )}
                 </div>
                 {m.role === 'user' && (
                   <span className="copilot-avatar user-avatar">👤</span>

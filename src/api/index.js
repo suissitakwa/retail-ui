@@ -140,6 +140,8 @@ export const fetchMyNotifications = () => NOTIF_API.get('/api/v1/notifications/m
 export const fetchUnreadCount    = () => NOTIF_API.get('/api/v1/notifications/unread-count');
 export const markNotificationRead = (id) => NOTIF_API.patch(`/api/v1/notifications/${id}/read`);
 
+export const cancelOrder = (id) => API.post(`/api/v1/orders/${id}/cancel`);
+
 // Copilot
 export const chatWithCopilot = (message, orderId) =>
   API.post('/api/v1/copilot/chat', { message, orderId: orderId || null });
