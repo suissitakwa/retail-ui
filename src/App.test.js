@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+jest.mock('./api', () => ({
+  fetchProfile: jest.fn().mockResolvedValue({ data: null }),
+  fetchCart: jest.fn().mockResolvedValue({ data: [] }),
+  API: { interceptors: { request: { use: jest.fn() }, response: { use: jest.fn() } } },
+  NOTIF_API: { interceptors: { request: { use: jest.fn() }, response: { use: jest.fn() } } },
+}));
+
+test('renders the navbar', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getByRole('navigation')).toBeInTheDocument();
 });
