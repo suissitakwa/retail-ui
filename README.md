@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/suissitakwa/retail-ui/actions/workflows/build.yml/badge.svg)](https://github.com/suissitakwa/retail-ui/actions/workflows/build.yml)
 
-Full-featured e-commerce frontend for the **Retail Platform** — built with React 19, deployed to GKE via Docker + nginx, and styled with a custom dark theme (Novamart).
+Full-featured e-commerce frontend for the **Retail Platform** — built with React 19, deployed to **Netlify**, and styled with a custom dark theme (Novamart).
+
+**Live:** [retail-novamart.netlify.app](https://retail-novamart.netlify.app) — API served by Railway backend
 
 ![Home page — Novamart dark theme](docs/screenshots/home.png)
 
@@ -108,7 +110,9 @@ npm start        # dev server on :3000
 | File | `REACT_APP_API_URL` | `REACT_APP_NOTIF_API_URL` |
 |---|---|---|
 | `.env.development` | `http://localhost:8080` | `http://localhost:8086` |
-| `.env.production` | `""` (nginx proxy) | GKE notification-service URL |
+| `.env.production` | `""` (nginx proxy when running in GKE) | GKE notification-service URL |
+
+**Netlify live demo:** set `REACT_APP_API_URL=<your-railway-url>` in the Netlify dashboard under Site settings → Environment variables. Leave `REACT_APP_NOTIF_API_URL` unset (falls back to the same URL).
 
 ### Run tests
 
