@@ -121,7 +121,6 @@ export default function Shop() {
               <div className="prod-body">
                 {p.category?.name && <div className="prod-brand">{p.category.name}</div>}
                 <div className="prod-name">{p.name}</div>
-                <div className="prod-stars">★★★★★ <span>(1.2K)</span></div>
               </div>
               <div className="prod-footer">
                 <div>
