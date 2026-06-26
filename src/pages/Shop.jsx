@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProducts, fetchCategories } from '../api';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { fetchProducts, fetchCategories, searchProducts } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
@@ -28,6 +29,11 @@ const NotificationBar = ({ message, type, onClose }) => {
 export default function Shop() {
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const qParam = searchParams.get('q') || '';
+  const catParam = searchParams.get('cat') || '';
 
   const [products,        setProducts]        = useState([]);
   const [categories,      setCategories]      = useState([]);
@@ -42,10 +48,46 @@ export default function Shop() {
 
   useEffect(() => {
     setLoading(true);
-    fetchProducts()
+    const req = qParam ? searchProducts(qParam) : fetchProducts();
+    req
       .then(r => { setProducts(Array.isArray(r.data) ? r.data : []); setLoading(false); })
       .catch(() => { setLoading(false); setNotification({ message: 'Could not load products.', type: 'error' }); });
-  }, []);
+  }, [qParam]);
+
+  const handleCategoryClick = (cat) => {
+    setActiveCategory(cat.id);
+    if (qParam) {
+      setSearchParams({ q: qParam, cat: cat.name });
+    } else {
+      setSearchParams({ cat: cat.name });
+    }
+  };
+
+  const handleShowAll = () => {
+    setActiveCategory(null);
+    navigate('/shop');
+  };
+
+  const handleClear = () => {
+    setActiveCategory(null);
+    navigate('/shop');
+  };
+
+  const isCatActive = (cat) =>
+    activeCategory === cat.id ||
+    (catParam && catParam.toLowerCase() === cat.name?.toLowerCase());
+
+  const visible = (() => {
+    if (catParam) {
+      return products.filter(p => p.category?.name?.toLowerCase() === catParam.toLowerCase());
+    }
+    if (activeCategory) {
+      return products.filter(p => p.categoryId === activeCategory || p.category?.id === activeCategory);
+    }
+    return products;
+  })();
+
+  const hasFilter = qParam || catParam;
 
   const handleAdd = async (productId) => {
     if (!user?.id) { setNotification({ message: 'Please log in to add items to your cart.', type: 'error' }); return; }
@@ -61,10 +103,6 @@ export default function Shop() {
     }
   };
 
-  const visible = activeCategory
-    ? products.filter(p => p.categoryId === activeCategory || p.category?.id === activeCategory)
-    : products;
-
   if (loading) return (
     <div className="loading-center">
       <div className="spinner" />
@@ -77,7 +115,16 @@ export default function Shop() {
 
       {/* HEADER */}
       <div className="shop-page-header">
-        <h2 className="page-title">Shop</h2>
+        <div>
+          <h2 className="page-title">
+            {qParam ? `Results for "${qParam}"` : 'Shop'}
+          </h2>
+          {hasFilter && (
+            <button className="category-btn" style={{ marginTop: '6px' }} onClick={handleClear}>
+              × Clear
+            </button>
+          )}
+        </div>
         <span className="product-count">{visible.length} products</span>
       </div>
 
@@ -86,12 +133,17 @@ export default function Shop() {
       {/* CATEGORY FILTER */}
       {categories.length > 0 && (
         <div className="category-filter">
-          <button className={`category-btn${activeCategory === null ? ' active' : ''}`} onClick={() => setActiveCategory(null)}>All</button>
+          <button
+            className={`category-btn${!activeCategory && !catParam ? ' active' : ''}`}
+            onClick={handleShowAll}
+          >
+            All
+          </button>
           {categories.map(cat => (
             <button
               key={cat.id}
-              className={`category-btn${activeCategory === cat.id ? ' active' : ''}`}
-              onClick={() => setActiveCategory(cat.id)}
+              className={`category-btn${isCatActive(cat) ? ' active' : ''}`}
+              onClick={() => handleCategoryClick(cat)}
             >
               {cat.name}
             </button>
@@ -103,8 +155,8 @@ export default function Shop() {
       {visible.length === 0 ? (
         <div className="empty-state">
           <p style={{ fontSize: '48px', marginBottom: '12px' }}>🛍️</p>
-          <p>No products found in this category.</p>
-          <button className="category-btn active" style={{ marginTop: '12px' }} onClick={() => setActiveCategory(null)}>
+          <p>No products found{qParam ? ` for "${qParam}"` : ' in this category'}.</p>
+          <button className="category-btn active" style={{ marginTop: '12px' }} onClick={handleShowAll}>
             Browse all
           </button>
         </div>

@@ -185,6 +185,82 @@ body {
 .notif-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
 .notif-unread-label { font-size: 11px; color: var(--muted); padding: 8px 16px 4px; }
 
+/* === Notifications === */
+.notif-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 600;
+}
+.notif-mark-all-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, border-color 0.15s;
+}
+.notif-mark-all-btn:hover {
+  background: rgba(232,196,106,0.1);
+  border-color: var(--accent);
+}
+.notif-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.notif-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.notif-see-all-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.notif-see-all-btn:hover { color: var(--accent2); }
+.notifications-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+.notifications-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.notif-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.notif-row:last-child { border-bottom: none; }
+.notif-row:hover { background: var(--surface2); }
+.notif-row.read { opacity: 0.55; cursor: default; }
+.notif-row-body { flex: 1; }
+.notif-row-message { font-size: 14px; line-height: 1.4; margin-bottom: 4px; }
+.notif-row-date { font-size: 12px; color: var(--muted); }
+
 /* ─── HERO ───────────────────────────────────────── */
 .hero-section {
   position: relative; background: var(--surface);
