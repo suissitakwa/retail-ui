@@ -146,3 +146,6 @@ export const cancelOrder = (id) => API.post(`/api/v1/orders/${id}/cancel`);
 // Copilot
 export const chatWithCopilot = (message, orderId) =>
   API.post('/api/v1/copilot/chat', { message, orderId: orderId || null });
+
+// Admin analytics
+export const fetchAdminStats = () => API.get('/api/v1/admin/stats');
