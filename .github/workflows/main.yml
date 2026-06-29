@@ -7,12 +7,38 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-push:
+  test:
+    name: Install, Test & Build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+
+      - name: Build production bundle
+        run: npm run build
+
+  docker-push:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -32,8 +58,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
-      - name: Build and push Docker image (SHA + dev-latest)
+      - name: Build and push Docker image
         run: |
-          IMAGE="suissitakwa/retail-ui:dev-latest"
-          docker build -t "$IMAGE" .
-          docker push "$IMAGE"
+          docker build -t suissitakwa/retail-ui:dev-latest .
+          docker push suissitakwa/retail-ui:dev-latest
