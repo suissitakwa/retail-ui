@@ -1,8 +1,10 @@
 # Retail UI — React 19 Frontend
 
-[![CI](https://github.com/suissitakwa/retail-ui/actions/workflows/build.yml/badge.svg)](https://github.com/suissitakwa/retail-ui/actions/workflows/build.yml)
+[![CI](https://github.com/suissitakwa/retail-ui/actions/workflows/main.yml/badge.svg)](https://github.com/suissitakwa/retail-ui/actions/workflows/main.yml)
 
-Full-featured e-commerce frontend for the **Retail Platform** — built with React 19, deployed to GKE via Docker + nginx, and styled with a custom dark theme (Novamart).
+Full-featured e-commerce frontend for the **Retail Platform** — built with React 19, deployed to **Netlify**, and styled with a custom dark theme (Novamart).
+
+**Live:** [retail-novamart.netlify.app](https://retail-novamart.netlify.app) — API served by Railway backend
 
 ![Home page — Novamart dark theme](docs/screenshots/home.png)
 
@@ -38,16 +40,16 @@ Full-featured e-commerce frontend for the **Retail Platform** — built with Rea
 ## Features
 
 **Customer**
-- Browse products, search by category
+- Browse products, search by keyword (`?q=`) or category
 - Cart management (add / remove / clear) — persisted in backend
 - Stripe checkout with success/cancel redirect handling
 - Order history with status tracking
 - Profile management (name, email, password)
-- Notification bell — unread count badge + mark-as-read (routed to notification-service)
+- Notification bell — unread badge, mark-all-read, full-page notifications view (routed to notification-service)
 - AI Copilot — natural-language order support chat (GPT-4o-mini backed)
 
 **Admin**
-- Dashboard — orders overview
+- Analytics dashboard — KPI cards (total revenue, 30-day revenue, order count, customers), orders-by-status breakdown, top-5 products by units sold
 - Product management — create / delete with category + inventory
 - Order management — view all, delete
 - Customer management — view all registered users
@@ -108,7 +110,9 @@ npm start        # dev server on :3000
 | File | `REACT_APP_API_URL` | `REACT_APP_NOTIF_API_URL` |
 |---|---|---|
 | `.env.development` | `http://localhost:8080` | `http://localhost:8086` |
-| `.env.production` | `""` (nginx proxy) | GKE notification-service URL |
+| `.env.production` | `""` (nginx proxy when running in GKE) | GKE notification-service URL |
+
+**Netlify live demo:** set `REACT_APP_API_URL=<your-railway-url>` in the Netlify dashboard under Site settings → Environment variables. Leave `REACT_APP_NOTIF_API_URL` unset (falls back to the same URL).
 
 ### Run tests
 

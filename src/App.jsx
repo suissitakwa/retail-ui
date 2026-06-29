@@ -20,6 +20,7 @@ import Orders from './pages/Orders';
 import Register from './pages/Register';
 import ProtectedRoute from './pages/ProtectedRoute';
 import Copilot from './pages/Copilot';
+import Notifications from './pages/Notifications';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -70,6 +71,15 @@ function App() {
   element={
     <ProtectedRoute>
       <Copilot />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/notifications"
+  element={
+    <ProtectedRoute>
+      <Notifications />
     </ProtectedRoute>
   }
 />

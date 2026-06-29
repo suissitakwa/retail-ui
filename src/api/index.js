@@ -112,6 +112,7 @@ export const fetchMyOrders = (page = 0, size = 10) => {
 };
 
 export const fetchProducts = () => API.get('/api/v1/products');
+export const searchProducts = (q) => API.get(`/api/v1/products/search?q=${encodeURIComponent(q)}`);
 export const fetchProfile = () => API.get('/api/v1/customers/me');
 export const fetchCart = () => API.get('/api/v1/cart');
 export const removeFromCart = (productId) =>
@@ -145,3 +146,6 @@ export const cancelOrder = (id) => API.post(`/api/v1/orders/${id}/cancel`);
 // Copilot
 export const chatWithCopilot = (message, orderId) =>
   API.post('/api/v1/copilot/chat', { message, orderId: orderId || null });
+
+// Admin analytics
+export const fetchAdminStats = () => API.get('/api/v1/admin/stats');

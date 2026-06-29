@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchMyNotifications, fetchUnreadCount, markNotificationRead } from '../api';
 
 const POLL_INTERVAL = 30_000; // 30 s
@@ -9,6 +10,7 @@ export default function NotificationBell() {
   const [open, setOpen]               = useState(false);
   const [loading, setLoading]         = useState(false);
   const dropdownRef                   = useRef(null);
+  const navigate                      = useNavigate();
 
   // Poll unread count silently
   const refreshCount = useCallback(() => {
@@ -59,6 +61,18 @@ export default function NotificationBell() {
     }
   };
 
+  const handleMarkAll = async () => {
+    const unreadNotifs = notifications.filter(n => !n.isRead);
+    await Promise.allSettled(unreadNotifs.map(n => markNotificationRead(n.id)));
+    setNotifs(prev => prev.map(n => ({ ...n, isRead: true })));
+    setUnread(0);
+  };
+
+  const handleSeeAll = () => {
+    setOpen(false);
+    navigate('/notifications');
+  };
+
   const typeIcon = (type) => {
     if (type === 'ORDER_PLACED')  return '📦';
     if (type === 'PAYMENT_PAID')  return '💳';
@@ -83,7 +97,9 @@ export default function NotificationBell() {
           <div className="notif-dropdown-header">
             <span className="fw-semibold">Notifications</span>
             {unread > 0 && (
-              <span className="notif-unread-label">{unread} unread</span>
+              <button className="notif-mark-all-btn" onClick={handleMarkAll}>
+                Mark all as read
+              </button>
             )}
           </div>
 
@@ -112,6 +128,12 @@ export default function NotificationBell() {
                 {!n.isRead && <span className="notif-dot" />}
               </div>
             ))}
+          </div>
+
+          <div className="notif-footer">
+            <button className="notif-see-all-btn" onClick={handleSeeAll}>
+              See all notifications
+            </button>
           </div>
         </div>
       )}
