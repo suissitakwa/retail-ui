@@ -16,6 +16,8 @@ import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Orders from './pages/Orders';
 import Register from './pages/Register';
 import ProtectedRoute from './pages/ProtectedRoute';
@@ -37,6 +39,8 @@ function App() {
               <Route path="/shop" element={<Shop />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
                <Route path="/success" element={<Success />} />
                 <Route path="/cancel" element={<Cancel />} />
 

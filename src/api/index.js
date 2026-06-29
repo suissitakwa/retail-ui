@@ -149,3 +149,7 @@ export const chatWithCopilot = (message, orderId) =>
 
 // Admin analytics
 export const fetchAdminStats = () => API.get('/api/v1/admin/stats');
+
+// Password reset
+export const forgotPassword = (email) => API.post('/auth/forgot-password', { email });
+export const resetPassword = (token, newPassword) => API.post('/auth/reset-password', { token, newPassword });

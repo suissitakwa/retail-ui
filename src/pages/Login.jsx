@@ -59,7 +59,10 @@ export default function Login() {
             {loading ? 'Signing in…' : 'Sign in →'}
           </button>
 
-          <p className="auth-subtext" style={{ textAlign: 'center', marginTop: '16px' }}>
+          <p className="auth-subtext" style={{ textAlign: 'center', marginTop: '8px' }}>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </p>
+          <p className="auth-subtext" style={{ textAlign: 'center', marginTop: '8px' }}>
             Don't have an account? <Link to="/register">Create one</Link>
           </p>
         </form>
