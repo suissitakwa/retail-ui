@@ -32,8 +32,13 @@ export default function Register() {
       const profileRes = await fetchProfile();
       setAuthData(token, profileRes.data);
       navigate("/");
-    } catch {
-      setError("Registration failed. The email may already be in use.");
+    } catch (err) {
+      const status = err?.response?.status;
+      setError(
+        status === 400
+          ? "Registration failed. Check that your email is valid and password is at least 8 characters."
+          : "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -63,7 +68,7 @@ export default function Register() {
           <input type="email" name="email" value={form.email} onChange={handleChange} required placeholder="you@example.com" />
 
           <label>Password</label>
-          <input type="password" name="password" value={form.password} onChange={handleChange} required placeholder="At least 6 characters" />
+          <input type="password" name="password" value={form.password} onChange={handleChange} required placeholder="At least 8 characters" />
 
           <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '24px', marginBottom: '0' }}>
             Shipping Address
